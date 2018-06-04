@@ -1,0 +1,37 @@
+- in slicer python repl:
+    > execfile("PWD/kernelapp.py")
+
+  gives a kernel spec (printed only on terminal stdout) that can be connected to console or qtconsole:
+
+    $ jupyter console --existing <paste>
+    $ jupyter notebook --existing <paste>
+
+  (using `source /opt/sw/miniconda2/bin/activate` environment)
+
+  Status: that is a lightly hacked-up version of the IPKernel class ("IPKernelServer") which just turns off
+  a few things that don't work in Slicer. Then we use a modified version of the GUI event loop
+  integration examples to start a timer which calls `kernel.do_one_iteration` every 50 ms. This works fine
+  because the ZMQ threads are not preemptive AFAICT, they just hang out and wait for the kernel to poll.
+  Slicer GUI is still responsive.
+
+- notebook support: upstream doesn't support connecting to an existing kernel from the notebook server,
+  because "reasons".
+
+    https://github.com/ipython/ipython/issues/4066
+
+- hack:
+
+  This hacked up package works on python 3 (with a minor fix to hard-coded path -- actually looks fixed upstream,
+                                            but pypi version not updated)
+
+    https://github.com/ebanner/extipy
+
+  The `jupyter notebook ...` command there gives a working notebook attached to the latest (assuming Slicer)
+  kernel.
+
+  ~~s
+  But ideally upstream a usable Kernel/MultiKernelManager subclass as in:
+
+    https://groups.google.com/d/msg/jupyter/qamkem52Xn0/7YShZZ5kCQAJ
+    https://github.com/ebanner/extipy
+  ~~/s
